@@ -1,765 +1,111 @@
-        body {
-            -webkit-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            padding: 0;
-            margin: 0;
-            font-family: 'Lexend', sans-serif;
-            background: linear-gradient(120deg, #2c3e50, #4ca1af);
-            color: white;
-            overflow-x: hidden;
-            zoom: 90%;
-
-
-        }
-
-        ::-webkit-scrollbar {
-            width: 20px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 200, 255, 0.7)
-        }
- 
-        ::-webkit-scrollbar-thumb {
-            background: rgb(0, 122, 156);
-            border-radius: 12px;
-        }
-
-        h1 {
-            font-size: 22px;
-            font-family: 'Press Start 2P', cursive;
-            color: white;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.747) 25%, transparent 100%), 
-                        linear-gradient(to right, #1a1a1a76, #3a3a3ab0, #1a1a1aa1);
-
-            backdrop-filter: blur(19px);
-
-            border-radius: 0 0 35px 35px;
-            text-align: center;
-            margin: 0;
-            border: 3px solid #5E5E5E;
-            border-top: none;
-            padding: 25px 0 30px 0;
-            position: fixed;
-            width: 99.55%;
-            z-index: 9999999;
-            box-shadow: 0 16px 20px rgba(0, 0, 0, 0.3),
-                        inset 0 -8px 12px rgba(0, 0, 0, 0.4);
-            text-shadow: 
-                3px 3px 0 #3a3a3a,
-                6px 6px 0 rgba(0, 0, 0, 0.3),
-                0 0 8px rgba(255, 255, 255, 0.4);
-            letter-spacing: 1px;
-            position: fixed;
-        }
-
-        h1::after {
-            content: "";
-            position: absolute;
-            bottom: 10px;
-            left: 25%;
-            width: 50%;
-            height: 2px;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.7), transparent);
-            box-shadow: 0 0 4px rgba(255,255,255,0.5);
-        }
-
-        h1::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(to right, 
-                transparent, 
-                #5E5E5E, 
-                #8E8E8E, 
-                #5E5E5E, 
-                transparent);
-            opacity: 0.7;
-        }
-
-        .addon-description {
-            font-size: 14px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            color: white;
-            text-align: center;
-        }
-        
-        .addon-container {
-
-            
-            background: linear-gradient(120deg, #2c3e50b6, #8ebfc6);
-            border: 2px solid lightgray;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.9);
-            transition: transform 0.8s ease, box-shadow 2.3s ease;
-            animation: slideUp 2s ease-out;
-            min-width: 250px;
-            max-width: 300px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .addon-container.featured {
-            box-shadow: 0 5px 15px rgba(13, 255, 0, 0.555);
-            border:  2px solid rgba(125, 255, 85, 0.764);
-        }
-
-        .addon-container:hover {
-            transform: translateY(-10px) scale(1.03);
-            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
-        }
-
-        .addon-container:hover .addon-header {
-            border-bottom: 5px solid rgba(0, 255, 42, 0.648);
-        }
-
-        .addon-header {
-              display: flex;
-
-              align-items: center;
-              justify-content: center;
-                text-align: center;
-
-            font-size: large;
-            background: linear-gradient(90deg, #3498dbe3, #40c1e1a9);
-            color: white;
-            padding: 10px 0px;
-            transition: background 0.3s ease;
-            height: 35px;
-            text-overflow: hidden;
-            border-bottom: 5px solid rgba(70, 125, 202, 0.53);
-            border-radius: 12px 12px 0px 0px;
-        }
-
-        .download-button {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 8px;
-            margin-bottom: 14px;
-            border-radius: 8px;
-            background-color: #00ffc86f;
-            border: 2px solid rgba(0, 128, 68, 0.142);
-            color: rgba(255, 255, 255, 0.911);
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            animation: bounce 2s infinite;
-            width: 100%;
-            margin-left: 0px;
-        }
-
-        .download-button:hover {
-            background-color: #00ff6657;
-            box-shadow: 0 5px 15px rgba(26, 188, 156, 0.232);
-        }
-
-        .download-button:active {
-            transform: scale(0.98);
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(0px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideUp2 {
-            from {
-                opacity: 0;
-                transform: translate(-50%, calc(-50% + 20px));
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, -50%);
-            }
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-2px);
-            }
-            60% {
-                transform: translateY(-1px);
-            }
-        }
-
-        .addon-body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            padding-bottom: 10px;
-            flex-grow: 1;
-        }
-
-        .addon-icon-container {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .addon-icon {
-            height: 128px;
-            width: 256px;
-            border-radius: 0px 0px 12px 12px;
-            background: rgb(50, 50, 50);
-        }
-
-        .addon-right {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
-            width: 100%;
-        }
-
-        .author-container {
-            display: flex; 
-            align-items: center; 
-            justify-content: left; 
-            left: 5px; 
-            bottom: 6px;
-            position: absolute;
-            background-color: rgba(172, 172, 172, 0.125);
-            border-radius: 10px;
-            padding: 0px 5px;
-            cursor: pointer;
-        }
-
-        .author-container:hover {
-            background-color: rgba(172, 172, 172, 0.402);
-        }
-
-        .author-container:active {
-            background-color: rgba(63, 182, 13, 0.735);
-        }
-
-        .author-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-        }
-
-        .author-name {
-            font-size: 12px;
-            color: white;
-        }
-
-        .link-container {
-            background-color: rgba(94, 94, 94, 0.4);
-            padding: 1px;
-            border-radius: 6px;
-            border: 3px solid rgba(50, 50, 50, 0.1);
-            border: 3px solid #5E5E5E;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            max-width: 500px;
-            margin: 20px auto;
-            padding: 10px;
-        }
-
-        .link-container:hover {
-            background-color: rgba(94, 94, 94, 0.8);
-            border: 3px solid rgba(0, 0, 0, 0.5);
-        }
-
-        .link-container p {
-            margin: 0 0 0px 0;
-            text-align: center;
-        }
-
-        .youtube-link, .discord-link {
-            width: 95%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-decoration: none;
-            color: white;
-            border: 3px solid rgba(255, 255, 255, 0.4);
-            border-radius: 6px;
-            background-color: rgba(10, 10, 10, 0.5);
-            margin: 2px;
-            padding: 2px 5px;
-        }
-
-        .youtube-link:hover, .discord-link:hover {
-            color: white;
-            border-radius: 6px;
-            background-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .youtube-icon, .discord-icon {
-            width: 30px;
-            vertical-align: middle;
-            margin-right: 10px;
-        }
-
-        .addonsDisplay1, .addonsDisplay {
-            font-family: 'Lexend';
-            border: 5px solid darkgray;
-            border-radius: 25px;
-            background-color: rgba(255, 255, 255, 0.7);
-            max-width: 100%;
-            overflow: hidden;
-            padding: 10px;
-            margin-bottom: 20px;
-        }
-
-        .content {
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .video-button {
-            border: 4px solid darkorange;
-            background-color: orange;
-            text-align: center;
-            max-width: 500px;
-            margin: 20px auto;
-            border-radius: 6px;
-            padding: 10px;
-            color: white;
-            display: none;
-            font-size: 20px;
-        }
-
-        .video-button:hover {
-            box-shadow: 0px 14px 18px rgba(0, 0, 0, 0.4);
-        }
-
-        .addon-description {
-            flex: 1;
-            font-size: 16px;
-            text-align: center;
-            margin-left: 10px;
-            border: 2px solid black;
-            height: 85px;
-            border-radius: 12px;
-            display: block;
-        }
-
-        .download-button:active {
-            border-radius: 20px;
-            background-color: white;
-            color: black;
-            border: 2px solid gray;
-        }
-
-        h4 {
-            font-size: 10px;
-            font-family: Copperplate, cursive;
-            color: white;
-            background-color: rgba(0, 0, 139, 0.32);
-            border-radius: 6px;
-            border: 3px solid rgba(0, 0, 0, 0.324);
-            text-align: center;
-            margin: 20px auto;
-            padding: 4px 4px;
-            max-width: 190px;
-            position: fixed;
-            bottom: -20px;
-            right: 0px;
-            z-index: 9999999;
-        }
-
-        h6 {
-            border: 4px solid #525252;
-            background-color: black;
-            text-align: center;
-            font-family: 'Black Ops One', Impact, sans-serif;
-            max-width: 600px;
-            margin: 20px auto;
-            border-radius: 6px;
-            color: white;
-            font-size: 20px;
-        }
-
-        h7 {
-            display: flex;
-            flex-direction: column;
-            max-width: 500px;
-            margin: 20px auto;
-            border: 3px solid #5E5E5E;
-            border-radius: 6px;
-            background-color: #757575;
-            padding: 10px;
-            color: white;
-            text-align: center;
-        }
-
-        .updateSite {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-decoration: none;
-            color: white;
-            border: 3px solid rgba(255, 255, 255, 0.4);
-            border-radius: 6px;
-            background-color: rgba(10, 10, 10, 0.5);
-            margin: 2px;
-            padding: 2px 5px;
-        }
-
-        .updateSite:hover {
-            color: white;
-            border-radius: 6px;
-            background-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .addon-container.outdated {
-            filter: grayscale(100%);
-            opacity: 1;
-        }
-
-        .addon-container.outdated .download-button {
-            background-color: #666;
-            cursor: not-allowed;
-            font-size: 14px;
-            padding: 8px;
-        }
-
-        .addon-container.outdated .download-button:hover {
-            transform: none;
-            box-shadow: none;
-        }
-
-        #infoMenu {
-            display: none;
-            background: linear-gradient(120deg, #2c3e50b4, #208bea55);
-            backdrop-filter: blur(19px);
-            width: 75%;
-            max-width: 500px;
-            position: fixed;
-            top: 55%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 10px 5px;
-            color: black;
-            z-index: 999;
-            border: 2px solid lightgray;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.9);
-            transition: transform 0.8s ease, box-shadow 2.3s ease;
-            animation: slideUp2 2s ease-out;
-            text-align: center;
-            overflow-x: hidden;
-            overflow-y: auto;
-            box-sizing: border-box;
-            padding-bottom: 50px;
-            zoom: 90%;
-        }
-
-        .infoTitle {
-            box-shadow: 0 16px 20px rgba(0, 0, 0, 0.3);
-            font-size: 22px;
-            font-family: 'Press Start 2P', cursive;
-            color: white;
-            background-color: black;
-            border-radius: 0 0 35px 35px;
-            text-align: center;
-            margin: 0;
-            border: 3px solid #5E5E5E;
-            padding: 25px 0 30px 0;
-            position: fixed;
-            width: 99.55%;
-            z-index: 9999999;
-            font-family: 'Lexend';
-            font-size: 20px;
-            text-align: center;
-            background: linear-gradient(90deg, #0099ff, #00ffb74f);
-            color: white;
-            padding: 10px 0px 10px 60px;
-            border-radius: 12px;
-            transition: background 0.3s ease;
-            margin-left: -25px;
-            width: 80%;
-            border: 0px solid white;
-            box-sizing: border-box;
-        }
-
-        .infoaddon-icon {
-            padding: 0 3%;
-            margin-top: 55px;
-            width: 90%;
-            border-radius: 20px;
-            border: 5px solid rgb(86, 86, 86);
-            background: rgb(50, 50, 50);
-            height: 250px;
-        }
-
-        .infocloseButton {
-            position: absolute;
-            top: 0px;
-            right: 0px;
-            width: 46px;
-            height: 46px;
-            border-radius: 10px 0px 10px 0px;
-            font-size: xx-large;
-            color: rgba(255, 255, 255, 0.681);
-            border: 1px solid rgba(255, 100, 100, 0.7);
-            background: rgba(255, 0, 0, 0.587);
-            transition: transform 0.2s, background 0.2s;
-            z-index: 25;
-            cursor: pointer;
-            margin: 5px;
-        }
-
-        .download-button2 {
-            justify-content: center;
-            align-items: center;
-            padding: 15px 10%;
-            border-radius: 8px;
-            background-color: #1abc9c;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: bounce 5s infinite;
-            width: 98%;
-            margin: 5px 0;
-        }
-
-        .download-button2:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(26, 188, 156, 0.6);
-        }
-
-        .download-button2:active {
-            transform: scale(0.98);
-        }
-
-
-
-        .download-button3 {
-            justify-content: center;
-            align-items: center;
-            padding: 18px 5px;
-            border-radius: 8px;
-            background-color: #1abc9c;
-            color: white;
-            font-size: small;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: bounce 5s infinite;
-        }
-
-        .download-button3:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgb(8, 185, 182);
-        }
-
-        .download-button3:active {
-            transform: scale(0.98);
-        }
-
-        footer {
-            text-align: center;
-            padding: 1rem;
-            background: #043f66;
-            border-top: 2px solid #475569;
-            border-radius: 12px;
-        }
-
-        footer a {
-            color: #3b82f6;
-            text-decoration: none;
-            margin: 0 0.5rem;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-
-        footer hr {
-            border: 1px solid #475569;
-            margin: 0.5rem 0;
-        }
-
-        #addonsList {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, 300px);
-            gap: 20px;
-            justify-content: center;
-        }
-
-        #addonsh6 {
-            width: 95%;
-            background-color: rgb(28, 187, 205);
-            border: 4px solid #27b5b0;
-            text-align: center;
-            font-family: 'Black Ops One', Impact, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            border-radius: 6px;
-            display: flex;
-            justify-content: left;
-            padding: 10px 5px;
-            overflow-x: scroll;
-        }
-
-        #addonsh6 h6 {
-            border: none;
-            border-bottom: 10px solid rgb(6, 102, 113);
-            background-color: rgb(15, 132, 145);
-            text-align: center;
-            font-family: 'Press Start 2P', sans-serif;
-            max-width: 90px;
-            margin: 1px;
-            padding: 10px 5px 5px 5px;
-            border-radius: 6px;
-            color: white;
-            font-size: x-small;
-            cursor: pointer;
-            max-height: 15px;
-
-            display: flex;
-            text-align: center;
-            justify-content: center;
-            align-items: center;
-            margin-left: 10px;
-        }
-
-
-        #addonsh6 button.search {
-
-            border: none;
-            border-bottom: 10px solid rgb(6, 102, 113);
-            background-color: rgb(15, 132, 145);
-            text-align: center;
-            font-family: 'Press Start 2P', sans-serif;
-            max-width: 90px;
-            margin: 1px;
-            padding: 10px 5px 5px 5px;
-            border-radius: 6px;
-            color: white;
-            font-size: x-small;
-            cursor: pointer;
-            max-height: 40px;
-
-            display: flex;
-            text-align: center;
-            justify-content: center;
-            align-items: center;
-            
-            font-size: x-large;
-            background-color: rgb(232, 201, 42);
-            border-bottom: 10px solid rgb(181, 139, 0);
-
-
-        }
-
-        #addonsh6 button.search:hover {
-            border-bottom: 10px solid rgb(151, 119, 0);
-        }
-
-        #addonsh6 .searchBar {
-            border: none;
-            background-color: rgb(232, 201, 42);
-            border-bottom: 10px solid rgb(181, 139, 0);
-            border-top: 4px solid rgb(181, 139, 0);
-            border-left: 4px solid rgb(181, 139, 0);
-            border-right: 4px solid rgb(181, 139, 0);
-            text-align: center;
-            font-family: 'Press Start 2P', sans-serif;
-            margin: 1px;
-            padding: 0px;
-            border-radius: 6px;
-            color: rgb(255, 255, 255);
-            font-size: x-small;
-            cursor: text;
-            width: auto;
-            margin-right: auto;
-
-        }
-
-        #addonsh6 .searchBar:hover {
-            border-bottom: 10px solid rgb(151, 119, 0);
-        }
-
-
-        #addonsh6 h6.active {
-            background-color: rgb(33, 200, 28);
-            border-bottom: 10px solid #229316;
-        }  
-
-        #addonsh6 h6:hover {
-            color: rgb(203, 203, 203);
-        }  
-
-        #addonsh6 h6:active {
-            color: rgb(0, 255, 102);
-        }  
-
-
-
-
-@media (max-width: 400px) {
-  #infoMenu {
-    zoom: 60%;
-  }
-  h1 { zoom: 70%;}
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-
-@media (min-width: 401px) and (max-width: 800px) {
-  #infoMenu {
-    zoom: 80%;
-  }
-  h1 {
-    zoom: 90%;
-  }
+/* Body */
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #5D2A7E, #1C1B1F);
+    color: #fff;
+    line-height: 1.6;
 }
 
-
-.blur {
-    background: linear-gradient(120deg, #b7b7b779, #ffffff00);
-    backdrop-filter: blur(10px);
+/* Header */
+header {
     position: fixed;
-    display: fixed;
+    top: 0;
     width: 100%;
-    height: 100%;
-    z-index: 990;
+    background: linear-gradient(135deg, #9C27B0, #5D2A7E);
+    padding: 10px 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    z-index: 100;
 }
 
-
-#blurBackground {
-    display: none;
+.header-container {
+    text-align: center;
+    transform: perspective(800px) rotateX(20deg);
 }
 
+header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+/* Main Content */
+main {
+    padding: 80px 20px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    justify-items: center;
+    align-items: start;
+}
+
+/* Cards */
+.card {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    padding: 20px;
+    width: 300px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+}
+
+h2 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #fff;
+}
+
+.profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    border: 2px solid #fff;
+}
+
+/* Skills List */
+.skills ul {
+    list-style: none;
+    padding: 0;
+}
+
+.skills ul li {
+    margin: 5px 0;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 10px;
+    background: #1C1B1F;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+footer p {
+    font-size: 14px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    main {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        width: 90%;
+    }
+}
