@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minecraft Pack Manager</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen p-6 font-sans">
+  <div class="container mx-auto max-w-5xl bg-gray-800 rounded-lg shadow-lg p-6">
+    <h1 class="text-4xl font-bold mb-8 text-center text-blue-400">Minecraft Pack Manager</h1>
+    
+    <!-- Upload Section -->
+    <div class="mb-10 bg-gray-700 p-6 rounded-lg">
+      <h2 class="text-2xl font-semibold mb-4 text-blue-300">Upload New Pack</h2>
+      <div class="flex items-center space-x-4">
+        <input type="file" id="packInput" accept=".mcaddon,.mcpack,.mcworld" class="w-full p-2 bg-gray-600 rounded text-gray-100">
+        <button onclick="uploadPack()" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Upload</button>
+      </div>
+      <p id="uploadError" class="text-red-400 mt-2 hidden"></p>
+    </div>
+
+    <!-- Pack List Section -->
+    <div class="mb-10 bg-gray-700 p-6 rounded-lg">
+      <h2 class="text-2xl font-semibold mb-4 text-blue-300">Available Packs</h2>
+      <ul id="packListUl" class="space-y-3"></ul>
+    </div>
+
+    <!-- Edit Section -->
+    <div id="editSection" class="hidden bg-gray-700 p-6 rounded-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-semibold text-blue-300">Edit Pack: <span id="currentPack"></span></h2>
+        <div class="space-x-2">
+          <button onclick="renamePackPrompt()" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition">Rename Pack</button>
+          <button onclick="deletePack()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">Delete Pack</button>
+        </div>
+      </div>
+      <div class="mb-4 flex space-x-2">
+        <button onclick="createNewFilePrompt()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">New File</button>
+        <button onclick="createNewFolderPrompt()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">New Folder</button>
+      </div>
+      <ul id="fileList" class="space-y-3 mb-6"></ul>
+      <div id="fileEditor" class="hidden">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-medium text-blue-300">Editing: <span id="currentFile"></span></h3>
+          <div class="space-x-2">
+            <button id="autoUpdateBtn" class="hidden bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition">Auto Update</button>
+            <button onclick="renameFilePrompt()" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition">Rename File</button>
+          </div>
+        </div>
+        <textarea id="fileContent" class="w-full h-96 p-3 bg-gray-600 rounded text-gray-100 font-mono"></textarea>
+        <div class="mt-4">
+          <button onclick="saveFileChanges()" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition">Save File</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Addon Modal -->
+    <div id="addonModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+      <div class="bg-gray-700 p-6 rounded-lg w-full max-w-lg">
+        <h2 id="addonModalTitle" class="text-2xl font-semibold mb-4 text-blue-300"></h2>
+        <form id="addonForm" class="space-y-4" enctype="multipart/form-data">
+          <div>
+            <label for="addonAuthor" class="block text-sm font-medium text-gray-300">Author</label>
+            <input type="text" id="addonAuthor" class="w-full p-2 bg-gray-600 rounded text-gray-100">
+          </div>
+          <div>
+            <label for="addonName" class="block text-sm font-medium text-gray-300">Name</label>
+            <input type="text" id="addonName" class="w-full p-2 bg-gray-600 rounded text-gray-100">
+          </div>
+          <div>
+            <label for="addonIconUrl" class="block text-sm font-medium text-gray-300">Icon URL (or upload below)</label>
+            <input type="text" id="addonIconUrl" class="w-full p-2 bg-gray-600 rounded text-gray-100">
+          </div>
+          <div>
+            <label for="addonIconFile" class="block text-sm font-medium text aktivitet-gray-300">Upload Icon Image</label>
+            <input type="file" id="addonIconFile" accept="image/*" class="w-full p-2 bg-gray-600 rounded text-gray-100">
+          </div>
+          <div>
+            <label for="addonDescription" class="block text-sm font-medium text-gray-300">Description</label>
+            <textarea id="addonDescription" class="w-full p-2 bg-gray-600 rounded text-gray-100"></textarea>
+          </div>
+          <div>
+            <label for="addonDownload" class="block text-sm font-medium text-gray-300">Download URL (// for local, or https)</label>
+            <input type="text" id="addonDownload" class="w-full p-2 bg-gray-600 rounded text-gray-100">
+          </div>
+          <div>
+            <label for="addonTypes" class="block text-sm font-medium text-gray-300">Types (comma-separated, e.g., addon,script,world)</label>
+            <input type="text" id="addonTypes" class="w-full p-2 bg-gray-600 rounded text-gray-100">
+          </div>
+          <div>
+            <label for="addonOutdated" class="block text-sm font-medium text-gray-300">Outdated</label>
+            <input type="checkbox" id="addonOutdated" class="p-2 bg-gray-600 rounded text-gray-100">
+          </div>
+          <div class="flex justify-end space-x-2">
+            <button type="button" onclick="closeAddonModal()" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">Cancel</button>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentPackFiles = {};
+    let currentPackName = '';
+    let currentFolderPath = '';
+    let addons = [];
+
+    // Generate a random UUID
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    // Get emoji for file or folder
+    function getFileEmoji(filePath, isDir) {
+      if (isDir) return '📁';
+      if (filePath.match(/\.(json|txt|mcfunction)$/)) return '📝';
+      if (filePath.match(/\.(mcaddon|mcpack|mcworld)$/)) return '📦';
+      return '📄';
+    }
+
+    // Fetch addons.js content
+    async function fetchAddons() {
+      try {
+        const response = await fetch('/addons');
+        const data = await response.json();
+        addons = data.addons;
+      } catch (error) {
+        console.error('Error fetching addons:', error);
+        alert('Error fetching addons');
+      }
+    }
+
+    // Fetch list of packs from server
+    async function fetchPacks() {
+      try {
+        await fetchAddons(); // Fetch addons.js first
+        const response = await fetch('/packs');
+        const packs = await response.json();
+        const packListUl = document.getElementById('packListUl');
+        packListUl.innerHTML = '';
+        packs.forEach(pack => {
+          const addon = addons.find(a => 
+            a.download === `//${pack}` || 
+            a.download === `//[B]${pack}` || 
+            a.download === `//[R]${pack}` ||
+            (a.types.includes('addon') && (pack === `[B]${a.download.replace('//', '')}` || pack === `[R]${a.download.replace('//', '')}`))
+          );
+          const li = document.createElement('li');
+          li.className = 'flex justify-between items-center p-2 bg-gray-600 rounded';
+          li.innerHTML = `
+            <a href="#" onclick="loadPack('${pack}')" class="text-blue-400 hover:underline">📦 ${pack}</a>
+            <div>
+              <button onclick="openAddonModal('${pack}', ${addon ? 'true' : 'false'})" class="text-blue-400 hover:text-blue-500 mr-2">${addon ? '✏️ Edit Addon' : '➕ Add Addon'}</button>
+              <button onclick="renamePackPrompt('${pack}')" class="text-yellow-400 hover:text-yellow-500 mr-2">✏️ Rename</button>
+              <button onclick="deletePack('${pack}')" class="text-red-400 hover:text-red-500">🗑️ Delete</button>
+            </div>`;
+          packListUl.appendChild(li);
+        });
+      } catch (error) {
+        console.error('Error fetching packs:', error);
+        alert('Error fetching packs');
+      }
+    }
+
+    // Open addon modal
+    async function openAddonModal(packName, isEdit) {
+      const modal = document.getElementById('addonModal');
+      const form = document.getElementById('addonForm');
+      const title = document.getElementById('addonModalTitle');
+      title.textContent = isEdit ? `Edit Addon: ${packName}` : `Add Addon: ${packName}`;
+      
+      // Reset form
+      document.getElementById('addonAuthor').value = '';
+      document.getElementById('addonName').value = packName.replace(/\[B\]|\[R\]/, '').replace(/\.(mcaddon|mcpack|mcworld)$/, '');
+      document.getElementById('addonIconUrl').value = '';
+      document.getElementById('addonIconFile').value = '';
+      document.getElementById('addonDescription').value = '';
+      document.getElementById('addonDownload').value = `//${packName.replace(/\[B\]|\[R\]/, '')}`;
+      document.getElementById('addonTypes').value = packName.match(/\.mcaddon$/) ? 'addon' : packName.match(/\.mcpack$/) ? 'script' : 'world';
+      document.getElementById('addonOutdated').checked = false;
+
+      // Populate form if editing
+      if (isEdit) {
+        const addon = addons.find(a => 
+          a.download === `//${packName}` || 
+          a.download === `//[B]${packName}` || 
+          a.download === `//[R]${packName}` ||
+          (a.types.includes('addon') && (packName === `[B]${a.download.replace('//', '')}` || packName === `[R]${a.download.replace('//', '')}`))
+        );
+        if (addon) {
+          document.getElementById('addonAuthor').value = addon.author || '';
+          document.getElementById('addonName').value = addon.name || '';
+          document.getElementById('addonIconUrl').value = addon.icon || '';
+          document.getElementById('addonDescription').value = addon.description || '';
+          document.getElementById('addonDownload').value = addon.download || `//${packName.replace(/\[B\]|\[R\]/, '')}`;
+          document.getElementById('addonTypes').value = addon.types ? addon.types.join(',') : '';
+          document.getElementById('addonOutdated').checked = addon.outdated || false;
+        }
+      }
+
+      // Handle form submission
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        const iconFile = document.getElementById('addonIconFile').files[0];
+        let iconUrl = document.getElementById('addonIconUrl').value;
+
+        // Upload icon file if provided
+        if (iconFile) {
+          const formData = new FormData();
+          formData.append('icon', iconFile);
+          try {
+            const response = await fetch('/upload-icon', {
+              method: 'POST',
+              body: formData
+            });
+            const result = await response.json();
+            if (response.ok) {
+              iconUrl = `//addonIcons/${result.filename}`;
+            } else {
+              throw new Error(result.error);
+            }
+          } catch (error) {
+            console.error('Error uploading icon:', error);
+            alert(`Error uploading icon: ${error.message}`);
+            return;
+          }
+        }
+
+        const addonData = {
+          author: document.getElementById('addonAuthor').value,
+          name: document.getElementById('addonName').value,
+          icon: iconUrl,
+          description: document.getElementById('addonDescription').value,
+          download: document.getElementById('addonDownload').value,
+          types: document.getElementById('addonTypes').value.split(',').map(t => t.trim()),
+          outdated: document.getElementById('addonOutdated').checked
+        };
+
+        try {
+          const response = await fetch('/update-addons', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ packName, addonData, isEdit })
+          });
+          if (response.ok) {
+            alert(isEdit ? 'Addon updated successfully' : 'Addon added successfully');
+            await fetchAddons();
+            fetchPacks();
+            closeAddonModal();
+          } else {
+            alert('Error saving addon');
+          }
+        } catch (error) {
+          console.error('Error saving addon:', error);
+          alert('Error saving addon');
+        }
+      };
+
+      modal.classList.remove('hidden');
+    }
+
+    // Close addon modal
+    function closeAddonModal() {
+      document.getElementById('addonModal').classList.add('hidden');
+      document.getElementById('addonForm').onsubmit = null;
+      document.getElementById('addonIconFile').value = '';
+    }
+
+    // Upload new pack
+    async function uploadPack() {
+      const fileInput = document.getElementById('packInput');
+      const uploadError = document.getElementById('uploadError');
+      uploadError.classList.add('hidden');
+      const file = fileInput.files[0];
+      if (!file) {
+        uploadError.textContent = 'Please select a file';
+        uploadError.classList.remove('hidden');
+        return;
+      }
+      if (!file.name.match(/\.(mcaddon|mcpack|mcworld)$/)) {
+        uploadError.textContent = 'Please select a .mcaddon, .mcpack, or .mcworld file';
+        uploadError.classList.remove('hidden');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('pack', file);
+
+      try {
+        const response = await fetch('/upload', {
+          method: 'POST',
+          body: formData
+        });
+        if (response.ok) {
+          alert('Pack uploaded successfully');
+          fileInput.value = '';
+          fetchPacks();
+        } else {
+          const errorText = await response.text();
+          uploadError.textContent = `Upload failed: ${errorText}`;
+          uploadError.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('Error uploading pack:', error);
+        uploadError.textContent = 'Upload error: Network or server issue';
+        uploadError.classList.remove('hidden');
+      }
+    }
+
+    // Build folder structure from file paths
+    function buildFolderStructure(files) {
+      const structure = {};
+      for (const filePath in files) {
+        const parts = filePath.split('/');
+        let current = structure;
+        for (let i = 0; i < parts.length; i++) {
+          const part = parts[i];
+          if (i === parts.length - 1 && !files[filePath].dir) {
+            current[part] = { filePath, isDir: false };
+          } else {
+            if (!current[part]) {
+              current[part] = { children: {}, isDir: true };
+            }
+            current = current[part].children;
+          }
+        }
+      }
+      return structure;
+    }
+
+    // Render folder contents
+    function renderFolderContents(folder, folderPath = '') {
+      const fileList = document.getElementById('fileList');
+      fileList.innerHTML = '';
+
+      if (folderPath) {
+        const li = document.createElement('li');
+        li.className = 'flex justify-between items-center p-2 bg-gray-600 rounded';
+        li.innerHTML = `<a href="#" onclick="navigateFolder('${folderPath.split('/').slice(0, -2).join('/')}/')" class="text-blue-400 hover:underline">⬅️ Back</a>`;
+        fileList.appendChild(li);
+      }
+
+      Object.entries(folder).forEach(([name, item]) => {
+        const fullPath = folderPath ? `${folderPath}${name}${item.isDir ? '/' : ''}` : name + (item.isDir ? '/' : '');
+        const li = document.createElement('li');
+        li.className = 'flex justify-between items-center p-2 bg-gray-600 rounded';
+        if (item.isDir) {
+          li.innerHTML = `
+            <a href="#" onclick="navigateFolder('${fullPath}')" class="text-blue-400 hover:underline">${getFileEmoji(fullPath, true)} ${name}</a>
+            <div>
+              <button onclick="renameFilePrompt('${fullPath}')" class="text-yellow-400 hover:text-yellow-500 mr-2">✏️ Rename</button>
+              <button onclick="deleteFilePrompt('${fullPath}')" class="text-red-400 hover:text-red-500">🗑️ Delete</button>
+            </div>`;
+        } else {
+          li.innerHTML = `
+            <a href="#" onclick="editFile('${item.filePath}')" class="text-blue-400 hover:underline">${getFileEmoji(item.filePath, false)} ${name}</a>
+            <div>
+              <button onclick="renameFilePrompt('${item.filePath}')" class="text-yellow-400 hover:text-yellow-500 mr-2">✏️ Rename</button>
+              <button onclick="deleteFilePrompt('${item.filePath}')" class="text-red-400 hover:text-red-500">🗑️ Delete</button>
+            </div>`;
+        }
+        fileList.appendChild(li);
+      });
+    }
+
+    // Navigate to a folder
+    function navigateFolder(folderPath) {
+      currentFolderPath = folderPath;
+      const structure = buildFolderStructure(currentPackFiles);
+      let current = structure;
+      if (folderPath) {
+        const parts = folderPath.split('/').filter(p => p);
+        for (const part of parts) {
+          current = current[part]?.children || {};
+        }
+      }
+      renderFolderContents(current, folderPath);
+    }
+
+    // Save pack to server
+    async function savePackToServer() {
+      const zip = new JSZip();
+      for (const [filePath, file] of Object.entries(currentPackFiles)) {
+        if (file.dir) {
+          zip.folder(filePath);
+        } else {
+          zip.file(filePath, file.content || await file.async('arraybuffer'));
+        }
+      }
+
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const formData = new FormData();
+      formData.append('pack', blob, currentPackName);
+
+      try {
+        const response = await fetch(`/update/${currentPackName}`, {
+          method: 'POST',
+          body: formData
+        });
+        if (!response.ok) {
+          throw new Error(`Update failed: ${await response.text()}`);
+        }
+        console.log('Pack saved to server');
+      } catch (error) {
+        console.error('Error saving pack:', error);
+        alert(`Error saving pack: ${error.message}`);
+      }
+    }
+
+    // Auto Update manifest.json
+    function autoUpdate() {
+      const manifestEditor = document.getElementById('fileContent');
+      try {
+        let manifest = JSON.parse(manifestEditor.value);
+
+        // Update dependency versions
+        if (manifest.dependencies) {
+          manifest.dependencies = manifest.dependencies.map(dep => {
+            if (dep.module_name === '@minecraft/server') {
+              return { ...dep, version: '2.2.0-beta' };
+            } else if (dep.module_name === '@minecraft/server-gametest') {
+              return { ...dep, version: '1.0.0-beta' };
+            } else if (dep.module_name === '@minecraft/server-ui') {
+              return { ...dep, version: '2.1.0-beta' };
+            }
+            return dep;
+          });
+        }
+
+        // Regenerate UUIDs
+        const updateUUIDs = obj => {
+          for (const key in obj) {
+            if (key === 'uuid' && typeof obj[key] === 'string') {
+              obj[key] = generateUUID();
+            } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+              updateUUIDs(obj[key]);
+            }
+          }
+        };
+        updateUUIDs(manifest);
+
+        manifestEditor.value = JSON.stringify(manifest, null, 2);
+        saveFileChanges(); // Save changes to currentPackFiles and server
+      } catch (error) {
+        console.error('Error updating manifest:', error);
+        alert('Error updating manifest: Invalid JSON');
+      }
+    }
+
+    // Load and unzip pack
+    async function loadPack(packName) {
+      currentPackName = packName;
+      currentFolderPath = '';
+      try {
+        const response = await fetch(`/packs/${packName}`);
+        const arrayBuffer = await response.arrayBuffer();
+        const zip = await JSZip.loadAsync(arrayBuffer);
+        currentPackFiles = {};
+
+        document.getElementById('currentPack').textContent = packName;
+        document.getElementById('editSection').classList.remove('hidden');
+        document.getElementById('fileEditor').classList.add('hidden');
+
+        zip.forEach((relativePath, file) => {
+          currentPackFiles[relativePath] = file;
+        });
+
+        navigateFolder('');
+      } catch (error) {
+        console.error('Error loading pack:', error);
+        alert('Error loading pack');
+      }
+    }
+
+    // Edit a file in the pack
+    async function editFile(filePath) {
+      const file = currentPackFiles[filePath];
+      if (file && !file.dir) {
+        const content = await file.async('text');
+        document.getElementById('fileContent').value = content;
+        document.getElementById('currentFile').textContent = filePath;
+        document.getElementById('fileEditor').classList.remove('hidden');
+
+        // Show Auto Update button only for manifest.json
+        const autoUpdateBtn = document.getElementById('autoUpdateBtn');
+        if (filePath.endsWith('manifest.json')) {
+          autoUpdateBtn.classList.remove('hidden');
+          autoUpdateBtn.onclick = autoUpdate;
+        } else {
+          autoUpdateBtn.classList.add('hidden');
+          autoUpdateBtn.onclick = null;
+        }
+      }
+    }
+
+    // Save changes to a file
+    async function saveFileChanges() {
+      const filePath = document.getElementById('currentFile').textContent;
+      const content = document.getElementById('fileContent').value;
+      currentPackFiles[filePath] = { ...currentPackFiles[filePath], content };
+      await savePackToServer();
+      alert('File changes saved');
+    }
+
+    // Rename file or folder
+    async function renameFilePrompt(filePath = document.getElementById('currentFile').textContent) {
+      const isDir = currentPackFiles[filePath]?.dir;
+      const promptText = isDir ? 'Enter new folder name (must end with /):' : 'Enter new file name:';
+      const newFileName = prompt(promptText, filePath);
+      if (newFileName && newFileName !== filePath && !currentPackFiles[newFileName]) {
+        if (isDir && !newFileName.endsWith('/')) {
+          alert('Folder name must end with /');
+          return;
+        } else if (!isDir && newFileName.endsWith('/')) {
+          alert('File name cannot end with /');
+          return;
+        }
+        if (isDir) {
+          const oldPrefix = filePath;
+          const newPrefix = newFileName;
+          const updatedFiles = {};
+          for (const [path, file] of Object.entries(currentPackFiles)) {
+            if (path.startsWith(oldPrefix)) {
+              const newPath = newPrefix + path.slice(oldPrefix.length);
+              updatedFiles[newPath] = file;
+            } else {
+              updatedFiles[path] = file;
+            }
+          }
+          currentPackFiles = updatedFiles;
+        } else {
+          currentPackFiles[newFileName] = currentPackFiles[filePath];
+          delete currentPackFiles[filePath];
+        }
+        await savePackToServer();
+        alert(`${isDir ? 'Folder' : 'File'} renamed and saved`);
+        navigateFolder(currentFolderPath);
+      } else if (newFileName && currentPackFiles[newFileName]) {
+        alert(`${isDir ? 'Folder' : 'File'} name already exists`);
+      }
+    }
+
+    // Delete file or folder
+    async function deleteFilePrompt(filePath) {
+      const isDir = currentPackFiles[filePath]?.dir;
+      if (confirm(`Are you sure you want to delete ${isDir ? 'folder' : 'file'} ${filePath}?`)) {
+        if (isDir) {
+          for (const path of Object.keys(currentPackFiles)) {
+            if (path.startsWith(filePath)) {
+              delete currentPackFiles[path];
+            }
+          }
+        } else {
+          delete currentPackFiles[filePath];
+        }
+        await savePackToServer();
+        alert(`${isDir ? 'Folder' : 'File'} deleted and saved`);
+        navigateFolder(currentFolderPath);
+      }
+    }
+
+    // Rename pack
+    function renamePackPrompt(packName = currentPackName) {
+      const newPackName = prompt('Enter new pack name:', packName);
+      if (newPackName && newPackName !== packName && newPackName.match(/\.(mcaddon|mcpack|mcworld)$/)) {
+        fetch(`/rename/${packName}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ newName: newPackName })
+        })
+          .then(response => {
+            if (response.ok) {
+              alert('Pack renamed successfully');
+              currentPackName = newPackName;
+              document.getElementById('currentPack').textContent = newPackName;
+              fetchPacks();
+            } else {
+              alert('Rename failed');
+            }
+          })
+          .catch(error => {
+            console.error('Error renaming pack:', error);
+            alert('Rename error');
+          });
+      } else if (newPackName && !newPackName.match(/\.(mcaddon|mcpack|mcworld)$/)) {
+        alert('Pack name must end with .mcaddon, .mcpack, or .mcworld');
+      }
+    }
+
+    // Delete pack
+    function deletePack(packName = currentPackName) {
+      if (confirm(`Are you sure you want to delete ${packName}?`)) {
+        fetch(`/delete/${packName}`, {
+          method: 'DELETE'
+        })
+          .then(response => {
+            if (response.ok) {
+              alert('Pack deleted successfully');
+              document.getElementById('editSection').classList.add('hidden');
+              fetchPacks();
+            } else {
+              alert('Delete failed');
+            }
+          })
+          .catch(error => {
+            console.error('Error deleting pack:', error);
+            alert('Delete error');
+          });
+      }
+    }
+
+    // Create new file
+    async function createNewFilePrompt() {
+      const fileName = prompt('Enter new file name (e.g., newfile.json):');
+      if (fileName && !currentPackFiles[currentFolderPath + fileName]) {
+        currentPackFiles[currentFolderPath + fileName] = { async: () => '', content: '' };
+        await savePackToServer();
+        alert('New file created and saved');
+        navigateFolder(currentFolderPath);
+      } else if (fileName && currentPackFiles[currentFolderPath + fileName]) {
+        alert('File name already exists');
+      }
+    }
+
+    // Create new folder
+    async function createNewFolderPrompt() {
+      const folderName = prompt('Enter new folder name (e.g., folder/):');
+      if (folderName && !currentPackFiles[currentFolderPath + folderName] && folderName.endsWith('/')) {
+        currentPackFiles[currentFolderPath + folderName] = { dir: true };
+        await savePackToServer();
+        alert('New folder created and saved');
+        navigateFolder(currentFolderPath);
+      } else if (folderName && currentPackFiles[currentFolderPath + folderName]) {
+        alert('Folder name already exists');
+      } else if (folderName && !folderName.endsWith('/')) {
+        alert('Folder name must end with /');
+      }
+    }
+
+    // Initialize
+    fetchPacks();
+  </script>
+</body>
+</html>
